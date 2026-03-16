@@ -9,6 +9,12 @@ Plans are self-contained HTML files with diagrams, tables, and structured layout
 ### With `npx skills` (recommended)
 
 ```bash
+npx skills add fiberplane/bs --skill bs
+```
+
+Or install all skills from this repo:
+
+```bash
 npx skills add fiberplane/bs
 ```
 
@@ -20,10 +26,11 @@ claude install github.com/fiberplane/bs
 
 ### Manual
 
-Clone into your Claude Code skills directory:
+Clone and symlink the skill into your Claude Code skills directory:
 
 ```bash
-git clone https://github.com/fiberplane/bs.git ~/.claude/skills/bs
+git clone https://github.com/fiberplane/bs.git /tmp/fiberplane-bs
+cp -r /tmp/fiberplane-bs/skills/bs ~/.claude/skills/bs
 ```
 
 ## Usage
