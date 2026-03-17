@@ -14,25 +14,24 @@ Plans are self-contained with diagrams, tables, and structured layouts using a c
 npx skills add fiberplane/bs --skill bs
 ```
 
-Or install all skills from this repo:
+### Manual (Claude Code)
 
-```bash
-npx skills add fiberplane/bs
-```
-
-### With the Agent
-
-```bash
-claude install github.com/fiberplane/bs
-```
-
-### Manual
-
-Clone and symlink the skill into your skills directory:
+Clone the repo and copy the skill into Claude Code's skills directory:
 
 ```bash
 git clone https://github.com/fiberplane/bs.git /tmp/fiberplane-bs
-cp -r /tmp/fiberplane-bs/skills/bs ~/.claude/skills/bs
+mkdir -p ~/.claude/skills
+cp -R /tmp/fiberplane-bs/skills/bs ~/.claude/skills/bs
+```
+
+### Manual (`.agents`)
+
+Clone the repo and copy the skill into your `.agents` skills directory:
+
+```bash
+git clone https://github.com/fiberplane/bs.git /tmp/fiberplane-bs
+mkdir -p ~/.agents/skills
+cp -R /tmp/fiberplane-bs/skills/bs ~/.agents/skills/bs
 ```
 
 ## Usage
@@ -51,7 +50,7 @@ The agent will generate a self-contained plan and publish it to a shareable URL.
 
 When you ask the agent to brainstorm, it generates a self-contained plan — all CSS, JS, and Mermaid diagrams are inlined. The agent then publishes the content to the bs hosting service via a simple POST to `https://app.fp.dev/bs/api/plans`, and you get back a shareable URL like `https://app.fp.dev/bs/a8k2m1x`.
 
-**Anonymous plans** (no credentials) expire after 3 days and include a claim token for later ownership or deletion. **Authenticated plans** (if you are logged in with the `fp` CLI, it will save your plan) persist indefinitely and can be updated with new versions.
+**Anonymous plans** (no credentials) expire after 3 days and include a claim token for later ownership or deletion. **Authenticated plans** (if you are logged in with the [`fp`](https://fp.dev) CLI, it will save your plan) persist indefinitely and can be updated with new versions.
 
 The published page renders your plan in a sandboxed iframe with theme support, inline commenting, and real-time cursor presence for anyone viewing the link.
 
