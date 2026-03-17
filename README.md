@@ -45,6 +45,14 @@ Once installed, ask Claude to brainstorm or create a visual plan:
 
 Claude will generate a self-contained HTML plan and publish it to a shareable URL.
 
+## How it works
+
+When you ask Claude to brainstorm, it generates a self-contained HTML file — all CSS, JS, and Mermaid diagrams are inlined. The agent then publishes the HTML to the bs hosting service via a simple POST to `https://app.fp.dev/bs/api/plans`, and you get back a shareable URL like `https://app.fp.dev/bs/a8k2m1x`.
+
+**Anonymous plans** (no credentials) expire after 3 days and include a claim token for later ownership or deletion. **Authenticated plans** (using fp CLI credentials from `~/.fiberplane/credentials.toml`) persist indefinitely and can be updated with new versions.
+
+The published page renders your plan in a sandboxed iframe with theme support, inline commenting, and real-time cursor presence for anyone viewing the link.
+
 ## What you get
 
 - **Visual HTML plans** — structured layouts with cards, tables, file trees, and diagrams

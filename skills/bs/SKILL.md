@@ -365,4 +365,4 @@ For detailed specifications beyond this prompt:
 
 - `references/design-tokens.md` — full CSS variable palette, font stacks, spacing scale, surface depth tiers with code examples
 - `references/mermaid-guide.md` — CDN ESM import snippet, theme config, zoom controls pattern, iframe considerations
-- `references/publish-api.md` — curl examples for create/update, auth header format, full response schemas, claim flow
+- `references/publish-api.md` — curl examples for create/update/delete, auth header format, full response schemas, claim flow, claim token deletion
