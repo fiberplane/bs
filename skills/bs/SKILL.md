@@ -225,24 +225,44 @@ Use Mermaid for flowcharts, sequence diagrams, and other structured diagrams. Lo
 ```html
 <script type="module">
   import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
-  mermaid.initialize({
-    startOnLoad: true,
-    theme: 'base',
-    themeVariables: {
-      primaryColor: '#1a1d1e',
-      primaryTextColor: '#e8e9e6',
-      primaryBorderColor: 'rgba(255,255,255,0.15)',
+
+  function getThemeVars() {
+    const s = getComputedStyle(document.documentElement);
+    const v = (name, fb) => s.getPropertyValue(name).trim() || fb;
+    const isDark = !document.documentElement.hasAttribute('data-theme')
+      ? !window.matchMedia('(prefers-color-scheme: light)').matches
+      : document.documentElement.getAttribute('data-theme') !== 'light';
+    return {
+      primaryColor: isDark ? v('--surface-1', '#1a1d1e') : v('--surface-1', '#f5f5f4'),
+      primaryTextColor: isDark ? v('--text-primary', '#e8e9e6') : v('--text-primary', '#1a1d1e'),
+      primaryBorderColor: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)',
       lineColor: '#fe7100',
-      secondaryColor: '#242626',
-      tertiaryColor: '#2a2d2e',
+      secondaryColor: isDark ? v('--surface-2', '#242626') : v('--surface-2', '#e8e8e6'),
+      tertiaryColor: isDark ? v('--surface-0', '#2a2d2e') : v('--surface-0', '#fafaf9'),
       fontFamily: '"Spline Sans Mono", monospace',
-      fontSize: '13px'
-    }
-  });
+      fontSize: '13px',
+    };
+  }
+
+  async function initMermaid() {
+    mermaid.initialize({ startOnLoad: false, theme: 'base', themeVariables: getThemeVars() });
+    await mermaid.run();
+  }
+
+  await initMermaid();
+
+  // Re-render on theme toggle or system preference change
+  new MutationObserver(() => initMermaid()).observe(
+    document.documentElement, { attributes: true, attributeFilter: ['data-theme'] }
+  );
+  window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', () => initMermaid());
 </script>
 ```
 
 - Always use `theme: 'base'` so `themeVariables` has full control
+- **Read CSS variables dynamically** via `getComputedStyle` — never hardcode surface/text colors in Mermaid config
+- **Re-render on theme change** — MutationObserver on `data-theme` + matchMedia listener calls `mermaid.run()` again
+- **Avoid inline `style` declarations** in diagram markup (e.g., `style NodeA fill:#1a1d1e`) — these cannot be updated on theme change. Use `classDef` with accent strokes instead
 - Prefer `flowchart TD` (top-down) over `LR` (left-right) for better readability
 - Add zoom controls on every diagram container (see `references/mermaid-guide.md`)
 - Keep diagrams under 20 nodes for clarity — split large diagrams into multiple smaller ones

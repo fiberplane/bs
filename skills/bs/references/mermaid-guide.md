@@ -9,28 +9,73 @@ Always load Mermaid via CDN ESM. Place this at the end of `<body>`, after all di
 ```html
 <script type="module">
   import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
-  mermaid.initialize({
-    startOnLoad: true,
-    theme: 'base',
-    themeVariables: {
-      primaryColor: '#1a1d1e',
-      primaryTextColor: '#e8e9e6',
-      primaryBorderColor: 'rgba(255,255,255,0.15)',
+
+  function getThemeVars() {
+    const s = getComputedStyle(document.documentElement);
+    const v = (name, fb) => s.getPropertyValue(name).trim() || fb;
+    const isDark = !document.documentElement.hasAttribute('data-theme')
+      ? !window.matchMedia('(prefers-color-scheme: light)').matches
+      : document.documentElement.getAttribute('data-theme') !== 'light';
+    return {
+      primaryColor: isDark ? v('--surface-1', '#1a1d1e') : v('--surface-1', '#f5f5f4'),
+      primaryTextColor: isDark ? v('--text-primary', '#e8e9e6') : v('--text-primary', '#1a1d1e'),
+      primaryBorderColor: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)',
       lineColor: '#fe7100',
-      secondaryColor: '#242626',
-      tertiaryColor: '#2a2d2e',
+      secondaryColor: isDark ? v('--surface-2', '#242626') : v('--surface-2', '#e8e8e6'),
+      tertiaryColor: isDark ? v('--surface-0', '#2a2d2e') : v('--surface-0', '#fafaf9'),
       fontFamily: '"Spline Sans Mono", monospace',
-      fontSize: '13px'
-    }
-  });
+      fontSize: '13px',
+    };
+  }
+
+  async function initMermaid() {
+    mermaid.initialize({ startOnLoad: false, theme: 'base', themeVariables: getThemeVars() });
+    await mermaid.run();
+  }
+
+  await initMermaid();
+
+  // Re-render on theme toggle (data-theme attribute change)
+  new MutationObserver(() => initMermaid()).observe(
+    document.documentElement, { attributes: true, attributeFilter: ['data-theme'] }
+  );
+  // Re-render on system preference change
+  window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', () => initMermaid());
 </script>
 ```
 
 ### Key config points
 
 - **Always `theme: 'base'`** — this gives `themeVariables` full control over colors. Using `'dark'` or other built-in themes will override your variables.
-- **`lineColor: '#fe7100'`** — electric orange for connections/arrows, the signature accent
+- **Read CSS variables dynamically** — `getComputedStyle` reads the current theme's surface/text tokens at init time. Never hardcode surface or text hex values.
+- **`lineColor: '#fe7100'`** — electric orange for connections/arrows, the signature accent. This stays constant across themes.
 - **`fontFamily`** — matches the plan's body font for consistency
+- **`startOnLoad: false`** — we call `mermaid.run()` manually so we can re-render on theme changes
+
+### Theme re-rendering
+
+Mermaid's `themeVariables` are set at initialization time — they don't respond to CSS changes. To support dark/light toggle:
+
+1. **MutationObserver** watches `data-theme` attribute on `<html>` — triggers on manual toggle from the hosting page
+2. **matchMedia listener** watches `prefers-color-scheme` — triggers on system preference change
+3. Both call `initMermaid()` which re-initializes with fresh `getComputedStyle` values and re-renders all diagrams
+
+### Avoid inline `style` declarations
+
+Do **not** use Mermaid's `style` syntax to set fill/color on individual nodes:
+
+```
+%% BAD — hardcoded colors, won't update on theme change
+style NodeA fill:#1a1d1e,stroke:#fe7100,color:#e8e9e6
+```
+
+Instead, use `classDef` for accent highlighting (stroke-only, no fill):
+
+```
+%% GOOD — fill comes from themeVariables, accent stroke is constant
+classDef accent stroke:#fe7100,stroke-width:2px
+class NodeA,NodeB accent
+```
 
 ## Diagram markup
 
@@ -182,6 +227,6 @@ flowchart TD
 
 ## iframe considerations
 
-Plans are rendered inside a `srcdoc` iframe on the published page. Each iframe is its own document, so Mermaid initializes independently within the iframe — no special handling needed.
+Plans are rendered inside a sandboxed `srcdoc` iframe (`sandbox="allow-scripts"`, no `allow-same-origin`). Mermaid initializes independently within the iframe.
 
-The zoom controls work within the iframe context. The parent frame's comment widget accesses the iframe DOM via `contentDocument` (same-origin via `allow-same-origin` sandbox attribute).
+The hosting page may set `data-theme` on the iframe's `<html>` via a postMessage bridge. The MutationObserver pattern above detects this and re-renders diagrams with the correct theme colors. The zoom controls also work within the iframe context.

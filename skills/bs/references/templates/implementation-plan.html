@@ -435,9 +435,8 @@
               C --> C2["Monitor & validate"]
               C --> C3["Remove old auth"]
 
-              style A fill:#1a1d1e,stroke:#fe7100,color:#e8e9e6
-              style B fill:#1a1d1e,stroke:#fe7100,color:#e8e9e6
-              style C fill:#1a1d1e,stroke:#fe7100,color:#e8e9e6
+              classDef accent stroke:#fe7100,stroke-width:2px
+              class A,B,C accent
           </pre>
         </div>
       </div>
@@ -629,20 +628,38 @@ export const account = pgTable("account", {
   </script>
   <script type="module">
     import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
-    mermaid.initialize({
-      startOnLoad: true,
-      theme: 'base',
-      themeVariables: {
-        primaryColor: '#1a1d1e',
-        primaryTextColor: '#e8e9e6',
-        primaryBorderColor: 'rgba(255,255,255,0.15)',
+
+    function getThemeVars() {
+      const s = getComputedStyle(document.documentElement);
+      const v = (name, fallback) => s.getPropertyValue(name).trim() || fallback;
+      const isDark = !document.documentElement.hasAttribute('data-theme')
+        ? !window.matchMedia('(prefers-color-scheme: light)').matches
+        : document.documentElement.getAttribute('data-theme') !== 'light';
+      return {
+        primaryColor: isDark ? v('--surface-1', '#1a1d1e') : v('--surface-1', '#f5f5f4'),
+        primaryTextColor: isDark ? v('--text-primary', '#e8e9e6') : v('--text-primary', '#1a1d1e'),
+        primaryBorderColor: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)',
         lineColor: '#fe7100',
-        secondaryColor: '#242626',
-        tertiaryColor: '#2a2d2e',
+        secondaryColor: isDark ? v('--surface-2', '#242626') : v('--surface-2', '#e8e8e6'),
+        tertiaryColor: isDark ? v('--surface-0', '#2a2d2e') : v('--surface-0', '#fafaf9'),
         fontFamily: '"Spline Sans Mono", monospace',
-        fontSize: '13px'
-      }
-    });
+        fontSize: '13px',
+      };
+    }
+
+    async function initMermaid() {
+      mermaid.initialize({ startOnLoad: false, theme: 'base', themeVariables: getThemeVars() });
+      await mermaid.run();
+    }
+
+    await initMermaid();
+
+    // Re-render on theme toggle (data-theme attribute change)
+    new MutationObserver(() => initMermaid()).observe(
+      document.documentElement, { attributes: true, attributeFilter: ['data-theme'] }
+    );
+    // Re-render on system preference change
+    window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', () => initMermaid());
   </script>
 </body>
 </html>
