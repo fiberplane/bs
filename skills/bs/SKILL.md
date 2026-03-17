@@ -1,6 +1,9 @@
-# bs — brainstorm
+---
+name: bs
+description: Generate rich visual plans with diagrams and structured layouts, then publish to a shareable URL. Triggers on "brainstorm", "bs", or "create a plan".
+---
 
-description: Generate rich visual plans with diagrams and structured layouts, then publish to a shareable URL. Triggers on "brainstorm", "bs", "create a plan", or "visualize architecture".
+# bs — brainstorm
 
 # Purpose
 Generate self-contained plans that are visually rich, structurally clear, and publishable to a shareable URL.
