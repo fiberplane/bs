@@ -28,9 +28,24 @@ Always load Mermaid via CDN ESM. Place this at the end of `<body>`, after all di
     };
   }
 
+  // Stash original source before first render (mermaid replaces <pre> content with SVG)
+  document.querySelectorAll('.mermaid').forEach(el => {
+    el.setAttribute('data-mermaid-source', el.textContent);
+  });
+
+  let rendering = false;
   async function initMermaid() {
-    mermaid.initialize({ startOnLoad: false, theme: 'base', themeVariables: getThemeVars() });
-    await mermaid.run();
+    if (rendering) return;
+    rendering = true;
+    try {
+      // Restore original source and clear processed state for re-renders
+      document.querySelectorAll('.mermaid').forEach(el => {
+        const src = el.getAttribute('data-mermaid-source');
+        if (src) { el.removeAttribute('data-processed'); el.innerHTML = src; }
+      });
+      mermaid.initialize({ startOnLoad: false, theme: 'base', themeVariables: getThemeVars() });
+      await mermaid.run();
+    } finally { rendering = false; }
   }
 
   await initMermaid();
@@ -54,11 +69,13 @@ Always load Mermaid via CDN ESM. Place this at the end of `<body>`, after all di
 
 ### Theme re-rendering
 
-Mermaid's `themeVariables` are set at initialization time — they don't respond to CSS changes. To support dark/light toggle:
+Mermaid's `themeVariables` are set at initialization time — they don't respond to CSS changes. Mermaid also marks rendered elements with `data-processed` and replaces the original `<pre>` text with an `<svg>`. To re-render with new theme colors:
 
-1. **MutationObserver** watches `data-theme` attribute on `<html>` — triggers on manual toggle from the hosting page
-2. **matchMedia listener** watches `prefers-color-scheme` — triggers on system preference change
-3. Both call `initMermaid()` which re-initializes with fresh `getComputedStyle` values and re-renders all diagrams
+1. **Stash source** — before the first render, save each `<pre class="mermaid">` element's `textContent` as a `data-mermaid-source` attribute
+2. **Restore before re-render** — on theme change, restore the original text, remove `data-processed`, then call `mermaid.initialize()` + `mermaid.run()`
+3. **Guard against concurrency** — use a `rendering` flag to prevent overlapping `mermaid.run()` calls from MutationObserver firing during an in-flight render
+4. **MutationObserver** watches `data-theme` attribute on `<html>` — triggers on manual toggle from the hosting page
+5. **matchMedia listener** watches `prefers-color-scheme` — triggers on system preference change
 
 ### Avoid inline `style` declarations
 

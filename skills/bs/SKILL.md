@@ -244,9 +244,24 @@ Use Mermaid for flowcharts, sequence diagrams, and other structured diagrams. Lo
     };
   }
 
+  // Stash original source before first render (mermaid replaces <pre> content with SVG)
+  document.querySelectorAll('.mermaid').forEach(el => {
+    el.setAttribute('data-mermaid-source', el.textContent);
+  });
+
+  let rendering = false;
   async function initMermaid() {
-    mermaid.initialize({ startOnLoad: false, theme: 'base', themeVariables: getThemeVars() });
-    await mermaid.run();
+    if (rendering) return;
+    rendering = true;
+    try {
+      // Restore original source and clear processed state for re-renders
+      document.querySelectorAll('.mermaid').forEach(el => {
+        const src = el.getAttribute('data-mermaid-source');
+        if (src) { el.removeAttribute('data-processed'); el.innerHTML = src; }
+      });
+      mermaid.initialize({ startOnLoad: false, theme: 'base', themeVariables: getThemeVars() });
+      await mermaid.run();
+    } finally { rendering = false; }
   }
 
   await initMermaid();
