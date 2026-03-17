@@ -94,12 +94,12 @@ Use CSS custom properties. Define them in `:root` on every plan:
 ### Dark-first
 
 - Default theme is dark — `--surface-0` as page background, light text
-- Include a light theme override via `@media (prefers-color-scheme: light)` that swaps the neutral scale
+- Include **both** a `@media (prefers-color-scheme: light)` override and a `[data-theme="light"]` selector. The media query handles system preference; the attribute selector handles the hosting page's manual toggle.
 - Light theme example:
 
 ```css
 @media (prefers-color-scheme: light) {
-  :root {
+  :root:not([data-theme]) {
     --surface-0: var(--neutral-50);
     --surface-1: var(--neutral-100);
     --surface-2: var(--neutral-200);
@@ -110,7 +110,40 @@ Use CSS custom properties. Define them in `:root` on every plan:
     --text-muted: var(--neutral-500);
   }
 }
+
+[data-theme="light"] {
+  --surface-0: var(--neutral-50);
+  --surface-1: var(--neutral-100);
+  --surface-2: var(--neutral-200);
+  --border: rgba(0, 0, 0, 0.08);
+  --border-strong: rgba(0, 0, 0, 0.15);
+  --text-primary: var(--neutral-900);
+  --text-secondary: var(--neutral-600);
+  --text-muted: var(--neutral-500);
+}
 ```
+
+### Color discipline
+
+Only use colors from the CSS variable palette. Never hardcode `rgba()`, hex, or `oklch()` values in component styles — always reference a `--token`. When you must use opacity-based values (shadows, overlays, hover states), provide both dark and light variants:
+
+```css
+/* shadows — use the --shadow token */
+--shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+
+/* in light theme override: */
+--shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+/* table row hover — provide both */
+tr:hover td { background: rgba(255, 255, 255, 0.02); }
+
+@media (prefers-color-scheme: light) {
+  tr:hover td { background: rgba(0, 0, 0, 0.02); }
+}
+[data-theme="light"] tr:hover td { background: rgba(0, 0, 0, 0.02); }
+```
+
+The only exceptions are the `--accent` and `--primary` hex values, which are defined once in `:root` and don't change between themes.
 
 ### Animations
 

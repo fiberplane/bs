@@ -86,13 +86,19 @@ Always include these Google Fonts imports in the `<head>`:
 --text-primary:  var(--neutral-100);           /* headings, primary text */
 --text-secondary: var(--neutral-400);          /* descriptions, secondary */
 --text-muted:    var(--neutral-500);           /* timestamps, labels */
+--shadow:        0 1px 3px rgba(0, 0, 0, 0.3); /* elevation shadow */
+--shadow-lg:     0 8px 24px rgba(0, 0, 0, 0.4); /* modals, popovers */
+--hover-row:     rgba(255, 255, 255, 0.02);    /* table row hover */
+--surface-recessed: oklch(0.12 0.004 106.4);   /* reference sections */
 ```
 
 ### Light theme override
 
+Include **both** selectors — the media query handles system preference, `[data-theme="light"]` handles the hosting page's manual toggle:
+
 ```css
 @media (prefers-color-scheme: light) {
-  :root {
+  :root:not([data-theme]) {
     --surface-0:      var(--neutral-50);
     --surface-1:      var(--neutral-100);
     --surface-2:      var(--neutral-200);
@@ -101,7 +107,26 @@ Always include these Google Fonts imports in the `<head>`:
     --text-primary:   var(--neutral-900);
     --text-secondary: var(--neutral-600);
     --text-muted:     var(--neutral-500);
+    --shadow:         0 1px 3px rgba(0, 0, 0, 0.08);
+    --shadow-lg:      0 8px 24px rgba(0, 0, 0, 0.12);
+    --hover-row:      rgba(0, 0, 0, 0.02);
+    --surface-recessed: var(--neutral-100);
   }
+}
+
+[data-theme="light"] {
+  --surface-0:      var(--neutral-50);
+  --surface-1:      var(--neutral-100);
+  --surface-2:      var(--neutral-200);
+  --border:         rgba(0, 0, 0, 0.08);
+  --border-strong:  rgba(0, 0, 0, 0.15);
+  --text-primary:   var(--neutral-900);
+  --text-secondary: var(--neutral-600);
+  --text-muted:     var(--neutral-500);
+  --shadow:         0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-lg:      0 8px 24px rgba(0, 0, 0, 0.12);
+  --hover-row:      rgba(0, 0, 0, 0.02);
+  --surface-recessed: var(--neutral-100);
 }
 ```
 
@@ -143,7 +168,7 @@ Prominent sections like the plan header. Slightly lighter background with subtle
   border: 1px solid var(--border-strong);
   border-radius: 8px;
   padding: 3rem 2rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow);
 }
 ```
 
@@ -164,7 +189,7 @@ Supporting info, footnotes, metadata. Darker background, inset feel.
 
 ```css
 .reference {
-  background: oklch(0.12 0.004 106.4);
+  background: var(--surface-recessed);
   border: 1px solid var(--border);
   border-radius: 6px;
   padding: 1.5rem;
@@ -233,13 +258,7 @@ td {
   color: var(--text-secondary);
 }
 tr:hover td {
-  background: rgba(255, 255, 255, 0.02);
-}
-
-@media (prefers-color-scheme: light) {
-  tr:hover td {
-    background: rgba(0, 0, 0, 0.02);
-  }
+  background: var(--hover-row);
 }
 ```
 
