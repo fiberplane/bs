@@ -64,10 +64,12 @@ Authenticated plans don't expire and can be updated.
 The fp CLI stores credentials at `~/.fiberplane/credentials.toml`:
 
 ```bash
-FP_TOKEN=$(grep -m1 'api_token' ~/.fiberplane/credentials.toml 2>/dev/null | sed 's/.*= *"\(.*\)"/\1/')
+FP_TOKEN=$(grep -m1 'token' ~/.fiberplane/credentials.toml 2>/dev/null | sed 's/.*= *"\(.*\)"/\1/')
 ```
 
 If the file doesn't exist or the token is empty, fall back to anonymous publishing.
+
+**Important:** Always attempt authenticated publishing first. Authenticated plans are permanent, editable, and visible in the user's console.
 
 ## Get plan metadata
 

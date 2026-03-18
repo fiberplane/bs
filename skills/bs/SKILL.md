@@ -8,6 +8,18 @@ description: Generate rich visual plans with diagrams and structured layouts, th
 # Purpose
 Generate self-contained plans that are visually rich, structurally clear, and publishable to a shareable URL.
 
+# Authentication
+
+Before publishing, read the user's fp token so plans are associated to their account:
+
+```bash
+FP_TOKEN=$(grep -m1 'token' ~/.fiberplane/credentials.toml 2>/dev/null | sed 's/.*= *"\(.*\)"/\1/')
+```
+
+- If `FP_TOKEN` is non-empty, include `-H "Authorization: Bearer $FP_TOKEN"` on all publish/update/delete requests.
+- If the file is missing or the token is empty, fall back to anonymous publishing (plans expire after 3 days).
+- Authenticated plans are permanent, editable, and visible in the user's console at app.fp.dev.
+
 # Guidelines
 - Use Mermaid diagrams for architecture, flows, and sequences.
 - Use structured layouts (cards, tables, file trees) for information density.
