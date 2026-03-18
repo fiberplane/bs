@@ -118,15 +118,15 @@ Include **both** selectors — the media query handles system preference, `[data
     --hover-row:      rgba(0, 0, 0, 0.02);
     --surface-recessed: var(--neutral-100);
     --primary-subtle: oklch(0.92 0.04 263.9);
-    --primary-light:  oklch(0.45 0.2 263.9);
+    --primary-light:  oklch(0.40 0.2 263.9);
     --accent-subtle:  oklch(0.92 0.05 55);
     --badge-bg-info:    var(--primary-subtle);
     --badge-bg-success: oklch(0.92 0.06 142.9);
     --badge-bg-warning: oklch(0.92 0.05 78.5);
     --badge-bg-danger:  oklch(0.92 0.06 25.3);
     --success: oklch(0.40 0.15 142.9);
-    --warning: oklch(0.45 0.13 78.5);
-    --danger:  oklch(0.45 0.18 25.3);
+    --warning: oklch(0.40 0.13 78.5);
+    --danger:  oklch(0.40 0.18 25.3);
   }
 }
 
