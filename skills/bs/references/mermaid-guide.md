@@ -235,6 +235,8 @@ Keep diagrams under 20 nodes for clarity. If a diagram has more than 20 nodes, s
 - Use `{curly braces}` for decisions
 - Use `([stadium shape])` for start/end
 - Use `[(cylinder)]` for databases
+- **Never use HTML tags** in labels (see "Common pitfalls" below)
+- For multi-line labels, use markdown strings: `A["` followed by actual newlines, closed with `` `"] ``
 
 ### Subgraphs
 
@@ -253,13 +255,74 @@ flowchart TD
 
 ### Styling nodes
 
-Apply custom styles to highlight important nodes:
+Use `classDef` to highlight important nodes — never per-node `style` directives (see "Avoid inline `style` declarations" above):
 
 ```
 flowchart TD
   A[Start] --> B[Critical Path]
   B --> C[End]
-  style B fill:#fe7100,color:#fff,stroke:none
+  classDef accent stroke:#fe7100,stroke-width:2px
+  class B accent
+```
+
+## Common pitfalls
+
+### No HTML tags in node labels
+
+Mermaid's flowchart parser does **not** support HTML elements inside node labels. Tags like `<code>`, `<b>`, or `<br>` cause a "Syntax error in text" parse failure.
+
+```
+%% BAD — <code> tags break the parser
+A["GET /api/plans\n<code>Cache: 24h</code>"] --> B["Response"]
+
+%% GOOD — markdown string with real newline for multi-line labels
+A["`GET /api/plans
+Cache: 24h`"] --> B["Response"]
+```
+
+### No `rgba()` or comma-containing CSS functions in classDef values
+
+Mermaid uses commas to separate style properties in `classDef` (e.g., `fill:#f00,stroke:#000`). CSS functions like `rgba()`, `rgb()`, and `hsl()` contain commas that the parser misinterprets as property delimiters. Use hex colors (with alpha channel if needed) instead:
+
+```
+%% BAD — commas in rgba() are parsed as property separators
+classDef muted fill:rgba(255,255,255,0.15),stroke-width:1px
+
+%% GOOD — hex with alpha channel
+classDef muted stroke:#ffffff26,stroke-width:1px
+```
+
+### Quote labels containing special characters
+
+If a node label contains parentheses, brackets, pipes, or other Mermaid syntax characters, wrap it in double quotes:
+
+```
+flowchart TD
+  A["fn(config)"] --> B["arr[0]"]
+```
+
+### Reserved words as node IDs
+
+Words like `end`, `default`, `class`, `style`, and `graph` cannot be used as bare node identifiers. Prefix or rename them:
+
+```
+%% BAD — "end" is reserved
+end[Finish] --> next[Continue]
+
+%% GOOD — prefix the ID
+endNode[Finish] --> nextNode[Continue]
+```
+
+### Commas, not semicolons, in classDef
+
+Mermaid uses commas to separate style properties — not CSS semicolons:
+
+```
+%% BAD — semicolons are silently misinterpreted
+classDef accent fill:#fe7100; stroke-width:2px
+
+%% GOOD — comma-separated
+classDef accent fill:#fe7100,stroke-width:2px
 ```
 
 ## iframe considerations
