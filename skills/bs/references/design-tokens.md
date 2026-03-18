@@ -90,6 +90,12 @@ Always include these Google Fonts imports in the `<head>`:
 --shadow-lg:     0 8px 24px rgba(0, 0, 0, 0.4); /* modals, popovers */
 --hover-row:     rgba(255, 255, 255, 0.02);    /* table row hover */
 --surface-recessed: oklch(0.12 0.004 106.4);   /* reference sections */
+
+/* Badge backgrounds — muted tints of the status/primary hues */
+--badge-bg-info:    var(--primary-subtle);                /* blue tint */
+--badge-bg-success: oklch(0.267 0.085 141.7);             /* green tint */
+--badge-bg-warning: oklch(0.267 0.07 78.5);               /* amber tint */
+--badge-bg-danger:  oklch(0.25 0.08 25.3);                /* red tint */
 ```
 
 ### Light theme override
@@ -111,6 +117,16 @@ Include **both** selectors — the media query handles system preference, `[data
     --shadow-lg:      0 8px 24px rgba(0, 0, 0, 0.12);
     --hover-row:      rgba(0, 0, 0, 0.02);
     --surface-recessed: var(--neutral-100);
+    --primary-subtle: oklch(0.92 0.04 263.9);
+    --primary-light:  oklch(0.45 0.2 263.9);
+    --accent-subtle:  oklch(0.92 0.05 55);
+    --badge-bg-info:    var(--primary-subtle);
+    --badge-bg-success: oklch(0.92 0.06 142.9);
+    --badge-bg-warning: oklch(0.92 0.05 78.5);
+    --badge-bg-danger:  oklch(0.92 0.06 25.3);
+    --success: oklch(0.40 0.15 142.9);
+    --warning: oklch(0.45 0.13 78.5);
+    --danger:  oklch(0.45 0.18 25.3);
   }
 }
 
@@ -127,6 +143,16 @@ Include **both** selectors — the media query handles system preference, `[data
   --shadow-lg:      0 8px 24px rgba(0, 0, 0, 0.12);
   --hover-row:      rgba(0, 0, 0, 0.02);
   --surface-recessed: var(--neutral-100);
+  --primary-subtle: oklch(0.92 0.04 263.9);
+  --primary-light:  oklch(0.45 0.2 263.9);
+  --accent-subtle:  oklch(0.92 0.05 55);
+  --badge-bg-info:    var(--primary-subtle);
+  --badge-bg-success: oklch(0.92 0.06 142.9);
+  --badge-bg-warning: oklch(0.92 0.05 78.5);
+  --badge-bg-danger:  oklch(0.92 0.06 25.3);
+  --success: oklch(0.40 0.15 142.9);
+  --warning: oklch(0.45 0.13 78.5);
+  --danger:  oklch(0.45 0.18 25.3);
 }
 ```
 
@@ -275,10 +301,10 @@ tr:hover td {
   text-transform: uppercase;
   letter-spacing: 0.025em;
 }
-.badge--success { background: oklch(0.267 0.085 141.7); color: var(--success); }
-.badge--warning { background: oklch(0.267 0.07 78.5);   color: var(--warning); }
-.badge--danger  { background: oklch(0.25 0.08 25.3);    color: var(--danger); }
-.badge--info    { background: var(--primary-subtle);      color: var(--primary-light); }
+.badge--success { background: var(--badge-bg-success); color: var(--success); }
+.badge--warning { background: var(--badge-bg-warning); color: var(--warning); }
+.badge--danger  { background: var(--badge-bg-danger);  color: var(--danger); }
+.badge--info    { background: var(--badge-bg-info);    color: var(--primary-light); }
 ```
 
 ### File trees
