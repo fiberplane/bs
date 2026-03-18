@@ -16,15 +16,35 @@ Always load Mermaid via CDN ESM. Place this at the end of `<body>`, after all di
     const isDark = !document.documentElement.hasAttribute('data-theme')
       ? !window.matchMedia('(prefers-color-scheme: light)').matches
       : document.documentElement.getAttribute('data-theme') !== 'light';
+    const border = isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)';
+    const text = isDark ? v('--text-primary', '#e8e9e6') : v('--text-primary', '#1a1d1e');
+    const surface1 = isDark ? v('--surface-1', '#1a1d1e') : v('--surface-1', '#f5f5f4');
+    const surface2 = isDark ? v('--surface-2', '#242626') : v('--surface-2', '#e8e8e6');
     return {
-      primaryColor: isDark ? v('--surface-1', '#1a1d1e') : v('--surface-1', '#f5f5f4'),
-      primaryTextColor: isDark ? v('--text-primary', '#e8e9e6') : v('--text-primary', '#1a1d1e'),
-      primaryBorderColor: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)',
+      primaryColor: surface1,
+      primaryTextColor: text,
+      primaryBorderColor: border,
       lineColor: '#fe7100',
-      secondaryColor: isDark ? v('--surface-2', '#242626') : v('--surface-2', '#e8e8e6'),
+      secondaryColor: surface2,
       tertiaryColor: isDark ? v('--surface-0', '#2a2d2e') : v('--surface-0', '#fafaf9'),
       fontFamily: '"Spline Sans Mono", monospace',
       fontSize: '13px',
+      // Sequence diagram
+      actorBkg: surface1,
+      actorBorder: border,
+      actorTextColor: text,
+      actorLineColor: border,
+      signalColor: '#fe7100',
+      signalTextColor: text,
+      labelBoxBkgColor: surface2,
+      labelBoxBorderColor: border,
+      labelTextColor: text,
+      loopTextColor: text,
+      noteBkgColor: surface2,
+      noteTextColor: text,
+      noteBorderColor: border,
+      activationBkgColor: isDark ? v('--surface-0', '#2a2d2e') : v('--surface-0', '#fafaf9'),
+      activationBorderColor: border,
     };
   }
 
