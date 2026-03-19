@@ -39,7 +39,7 @@
       --text-muted: var(--neutral-500);
       --shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
       --hover-row: rgba(255, 255, 255, 0.02);
-      --surface-recessed: oklch(0.12 0.004 106.4);
+      --surface-recessed: var(--neutral-900);
       --badge-bg-info: var(--primary-subtle);
       --badge-bg-success: oklch(0.267 0.085 141.7);
       --badge-bg-warning: oklch(0.267 0.07 78.5);
@@ -706,7 +706,7 @@ export const account = pgTable("account", {
           const src = el.getAttribute('data-mermaid-source');
           if (src) {
             el.removeAttribute('data-processed');
-            el.innerHTML = src;
+            el.textContent = src;
           }
         });
         mermaid.initialize({ startOnLoad: false, theme: 'base', themeVariables: getThemeVars() });

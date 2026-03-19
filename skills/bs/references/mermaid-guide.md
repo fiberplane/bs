@@ -61,7 +61,7 @@ Always load Mermaid via CDN ESM. Place this at the end of `<body>`, after all di
       // Restore original source and clear processed state for re-renders
       document.querySelectorAll('.mermaid').forEach(el => {
         const src = el.getAttribute('data-mermaid-source');
-        if (src) { el.removeAttribute('data-processed'); el.innerHTML = src; }
+        if (src) { el.removeAttribute('data-processed'); el.textContent = src; }
       });
       mermaid.initialize({ startOnLoad: false, theme: 'base', themeVariables: getThemeVars() });
       await mermaid.run();
@@ -228,8 +228,9 @@ Add zoom controls to every diagram container for usability:
 
 Keep diagrams under 20 nodes for clarity. If a diagram has more than 20 nodes, split it into multiple focused diagrams with connecting context.
 
-### Node labels
+### Node IDs and labels
 
+- **Keep IDs simple** — alphanumeric with no spaces or punctuation. Put the readable name in the label, not the ID: `userSvc["User Service"]` not `User Service[User Service]`
 - Keep labels short (3-5 words max)
 - Use `[square brackets]` for processes/actions
 - Use `{curly braces}` for decisions
@@ -263,6 +264,16 @@ flowchart TD
   B --> C[End]
   classDef accent stroke:#fe7100,stroke-width:2px
   class B accent
+```
+
+**Never set `color:` in classDef.** It hardcodes a text color that breaks in the opposite theme. Let `themeVariables.primaryTextColor` handle text color. Only set `stroke` and `stroke-width` in classDef.
+
+**Use semi-transparent fills (8-digit hex) if you need background tinting.** They layer over Mermaid's base theme, producing a tint that works in both light and dark:
+
+```
+%% alpha 33 = subtle, 55 = prominent
+classDef highlight fill:#fe710033,stroke:#fe7100,stroke-width:2px
+classDef muted stroke:#ffffff26,stroke-width:1px
 ```
 
 ## Common pitfalls
@@ -324,6 +335,84 @@ classDef accent fill:#fe7100; stroke-width:2px
 %% GOOD — comma-separated
 classDef accent fill:#fe7100,stroke-width:2px
 ```
+
+### Indentation inside `<pre>` tags matters
+
+Mermaid parses the **raw text content** of `<pre class="mermaid">` elements. If the `<pre>` is indented inside HTML (e.g., nested in `<div>`s), the diagram source inherits that leading whitespace. Mermaid is generally tolerant of uniform indentation, but **the diagram type declaration** (e.g., `flowchart TD`) must be the first non-empty line. Do not put blank lines or comments before it.
+
+```html
+<!-- GOOD — diagram type is the first meaningful line -->
+<pre class="mermaid">
+  flowchart TD
+    A --> B
+</pre>
+
+<!-- BAD — blank line before diagram type can cause parse errors -->
+<pre class="mermaid">
+
+  flowchart TD
+    A --> B
+</pre>
+```
+
+### Sequence diagram messages must be plain text
+
+Unlike flowchart labels, sequence diagram messages (the text after `:`) cannot contain special characters. Curly braces `{}`, square brackets `[]`, angle brackets `<>`, and `&` will **silently break the parser** and the entire diagram renders as raw text. Write human-readable descriptions, not code:
+
+```
+%% BAD — braces, brackets, and & break the parser
+A->>B: web_search({ queries: [...] })
+B->>B: User removes query 2, keeps 1 & 3
+B->>S: POST /submit { selected: [0, 2] }
+
+%% GOOD — plain English, no special characters
+A->>B: Call web_search with queries
+B->>B: User removes query 2, keeps 1 and 3
+B->>S: POST /submit with selected indices
+```
+
+### Arrow syntax varies by diagram type
+
+Each diagram type has its own arrow/connection syntax. Do not mix them:
+
+| Diagram | Connection syntax | Wrong |
+|---------|------------------|-------|
+| `flowchart` | `A --> B`, `A -->\|label\| B` | `A->>B` |
+| `sequenceDiagram` | `A->>B: label`, `A-->>B: label` | `A --> B` |
+| `stateDiagram-v2` | `A --> B: label` | `A->>B` |
+| `erDiagram` | `A \|\|--o{ B : "has"` | `A --> B` |
+
+### No spaces in arrow labels for flowcharts
+
+Flowchart edge labels use pipe delimiters with **no space** between the pipe and the arrow:
+
+```
+%% BAD — space before pipe breaks parsing
+A --> |Yes| B
+
+%% GOOD — pipes directly adjacent to arrow
+A -->|Yes| B
+```
+
+### Subgraph `end` keyword
+
+Every `subgraph` must be closed with a bare `end` keyword on its own line. Forgetting it — or nesting it wrong — causes cryptic parse errors:
+
+```
+%% GOOD
+subgraph API["API Layer"]
+  A --> B
+end
+
+%% BAD — missing end
+subgraph API["API Layer"]
+  A --> B
+C --> D
+```
+
+### Keep diagrams simple — split rather than cram
+
+If a diagram has more than ~20 nodes or complex crossing edges, split it into multiple focused diagrams. A single diagram that fails to parse wastes more time than two simpler ones that render correctly. When in doubt, use fewer nodes with clearer labels.
 
 ## iframe considerations
 
