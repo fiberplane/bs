@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="bs-logo.png" alt="BS logo" width="80" />
+</p>
+
 # bs — brainstorm
 
 An Agent skill for generating rich, visual plans and publishing them to shareable urls to collect feedback.
