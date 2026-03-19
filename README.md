@@ -2,7 +2,7 @@
   <img src="bs-logo.png" alt="BS logo" width="80" />
 </p>
 
-<h3 align="center">fp</h3>
+<h3 align="center">bs (brainstorm)</h3>
 
 <p align="center">
   An Agent skill for generating rich, visual plans 
