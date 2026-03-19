@@ -141,7 +141,72 @@ Wrap diagrams in a `<pre class="mermaid">` tag:
 
 ### Prefer `TD` (top-down) over `LR` (left-right)
 
-Top-down diagrams read more naturally and handle long labels better. Use `LR` only when the flow is explicitly horizontal (e.g., a pipeline).
+Top-down diagrams read more naturally and handle long labels better. Use `LR` only when the flow is explicitly horizontal (e.g., a pipeline with 3-4 steps).
+
+### Diagram type examples
+
+**Flowchart with decisions:**
+```
+flowchart TD
+  A[Request] --> B{Authenticated?}
+  B -->|Yes| C[Load Dashboard]
+  B -->|No| D[Login Page]
+  D --> E[Submit Credentials]
+  E --> B
+```
+
+**Sequence diagram:**
+```
+sequenceDiagram
+  participant C as Client
+  participant G as Gateway
+  participant S as Service
+  C->>G: POST /api/data
+  G->>G: Validate JWT
+  G->>S: Forward request
+  S-->>G: Response
+  G-->>C: 200 OK
+```
+
+**ER diagram:**
+```
+erDiagram
+  USERS ||--o{ ORDERS : places
+  ORDERS ||--|{ LINE_ITEMS : contains
+  LINE_ITEMS }o--|| PRODUCTS : references
+  USERS { string email PK }
+  ORDERS { int id PK }
+```
+
+**State diagram:**
+```
+stateDiagram-v2
+  [*] --> Draft
+  Draft --> Review : submit
+  Review --> Approved : approve
+  Review --> Draft : request_changes
+  Approved --> Published : publish
+  Published --> [*]
+```
+
+### Arrow styles for semantic meaning
+
+| Arrow | Meaning | Use for |
+|-------|---------|---------|
+| `-->` | Solid | Primary flow |
+| `-.->` | Dotted | Optional, async, or fallback paths |
+| `==>` | Thick | Critical or highlighted path |
+| `--x` | Cross | Rejected or blocked |
+| `-->\|label\|` | Labeled | Decision branches, data descriptions |
+
+### stateDiagram-v2 label limitations
+
+State diagram transition labels have a strict parser. These characters cause silent parse failures:
+- `<br/>` — only works in flowcharts, not state diagrams
+- Parentheses — `cancel()` confuses the parser
+- Multiple colons — the first `:` is the label delimiter; extras break parsing
+
+If you need multi-line labels or special characters in transitions, use `flowchart TD` with rounded nodes instead of `stateDiagram-v2`.
 
 ## Zoom controls
 
@@ -310,6 +375,21 @@ If a node label contains parentheses, brackets, pipes, or other Mermaid syntax c
 ```
 flowchart TD
   A["fn(config)"] --> B["arr[0]"]
+```
+
+### Escape pipes in edge labels
+
+If a label contains a literal `|`, use `#124;` (Mermaid HTML entity) or rephrase to avoid it — pipes delimit edge labels in flowcharts:
+
+```
+%% BAD — pipe inside label breaks parsing
+A -->|input | output| B
+
+%% GOOD — HTML entity for literal pipe
+A -->|input #124; output| B
+
+%% BETTER — rephrase
+A -->|input to output| B
 ```
 
 ### Reserved words as node IDs
