@@ -5,7 +5,7 @@
 <h3 align="center">bs (brainstorm)</h3>
 
 <p align="center">
-  An Agent skill for generating rich, visual plans 
+  An agent skill for generating rich, visual plans 
   <br />
   and publishing them to shareable urls to collect feedback.
 </p>
