@@ -91,6 +91,15 @@ Always include these Google Fonts imports in the `<head>`:
 --hover-row:     rgba(255, 255, 255, 0.02);    /* table row hover */
 --surface-recessed: oklch(0.12 0.004 106.4);   /* reference sections */
 
+/* Semantic color overrides — repeated here so dark-mode toggle
+   overrides mirror the light-mode block below */
+--primary-subtle: oklch(0.265 0.08  263.9);
+--primary-light:  oklch(0.685 0.169 263.9);
+--accent-subtle:  oklch(0.285 0.08 55);
+--success: oklch(0.723 0.191 142.9);
+--warning: oklch(0.768 0.165 78.5);
+--danger:  oklch(0.637 0.237 25.3);
+
 /* Badge backgrounds — muted tints of the status/primary hues */
 --badge-bg-info:    var(--primary-subtle);                /* blue tint */
 --badge-bg-success: oklch(0.267 0.085 141.7);             /* green tint */
